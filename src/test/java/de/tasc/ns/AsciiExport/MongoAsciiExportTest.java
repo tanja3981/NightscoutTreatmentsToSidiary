@@ -17,10 +17,10 @@ public class MongoAsciiExportTest {
     @Test
     public void exportBgEntries() throws Exception {
 
-        LocalDateTime fromDate = new LocalDateTime(2016, 4, 1, 0, 0, 0);
-        LocalDateTime toDate = new LocalDateTime(2016, 4, 26, 0, 0, 0);
+        LocalDateTime fromDate = new LocalDateTime(2016, 8, 1, 0, 0, 0);
+        LocalDateTime toDate = new LocalDateTime();
 
-        FileWriter fos = new FileWriter("/home/tanja/bgentries.csv");
+        FileWriter fos = new FileWriter("/home/tanja/vm-share/bgentries.csv");
         BufferedWriter writer = new BufferedWriter(fos);
         try {
             MongoAsciiExport export = new MongoAsciiExport(writer);

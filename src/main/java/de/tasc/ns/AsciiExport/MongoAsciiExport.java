@@ -32,8 +32,11 @@ public class MongoAsciiExport {
         MongoCursor<Document> iterator = results.iterator();
         while (iterator.hasNext()) {
             Document doc = iterator.next();
-            Long dateValue = doc.getLong("date");
+            //Long dateValue = doc.getLong("date");
             String dateString = doc.getString("dateString");
+            if(dateString == null) {
+                continue;
+            }
             Date date = ds.parse(dateString);
 
             String type = doc.getString("type");

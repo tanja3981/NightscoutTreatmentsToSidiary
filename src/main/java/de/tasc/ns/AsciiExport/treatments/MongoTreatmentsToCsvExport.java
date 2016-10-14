@@ -56,6 +56,7 @@ public class MongoTreatmentsToCsvExport {
             Integer duration = doc.getInteger("duration");
             Integer percent = doc.getInteger("percent");
             Integer preBolus = doc.getInteger("preBolus");
+            String notes = doc.getString("notes");
 
             builder.append(dayDF.format(date));
             builder.append(COMMA);
@@ -74,19 +75,23 @@ public class MongoTreatmentsToCsvExport {
                 builder.append(insulin);
             }
             builder.append(COMMA);
-            if (eventType.equals("Temp Basal")) {
+
+            if (eventType.equals("Temp Basal") && duration != null && percent != null) {
                 int hours = duration/60;
                 int minutes = duration % 60;
                 //Temporäre Basalrate (-40%/00:10)
                 builder.append(timeDF.format(date));
                 builder.append(": Temp Basalrate (");
-                builder.append(percent);
+                builder.append(percent.intValue());
                 builder.append("%/");
                 builder.append(String.format("%02d", hours));
                 builder.append(":");
                 builder.append(String.format("%02d", minutes));
                 builder.append(")");
                 //builder.append(duration + " Minuten");
+            }
+            else if(notes != null) {
+                builder.append(notes);
             }
 
             writer.write(builder.toString());
