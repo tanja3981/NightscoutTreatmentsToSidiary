@@ -15,12 +15,12 @@ public class MongoAsciiExportTest {
     @Test
     public void exportBgEntries() throws Exception {
 
-        AsciiWriter writer = new AsciiWriter();
+        AsciiWriter writer = new AsciiWriter("bgentries.csv");
 
         MongoAsciiExport export = new MongoAsciiExport(writer);
         export.exportBgEntries(TestUtil.getDateExpression());
 
-        writer.saveFile("/home/tanja/vm-share/bgentries.csv");
+        writer.saveFile();
 
     }
 

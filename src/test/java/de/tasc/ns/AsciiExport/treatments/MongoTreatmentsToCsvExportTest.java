@@ -17,7 +17,7 @@ public class MongoTreatmentsToCsvExportTest {
     @Test
     public void exportTreatments() throws IOException, ParseException {
 
-        FileWriter fos = new FileWriter("/home/tanja/treatments.csv");
+        FileWriter fos = new FileWriter("treatments.csv");
         BufferedWriter writer = new BufferedWriter(fos);
 
         MongoTreatmentsToCsvExport export = new MongoTreatmentsToCsvExport(writer);

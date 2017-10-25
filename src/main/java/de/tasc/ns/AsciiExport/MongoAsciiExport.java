@@ -53,7 +53,7 @@ public class MongoAsciiExport {
             } else if (type.equals("sensor")) {
                 parseSensor(date, doc);
             } else if (type.equals("cal")) {
-                parseCalibration(date, doc);
+                //parseCalibration(date, doc);
             } else if (type.equals("mbg")) {
                 parseMbg(date, doc);
             } else {
@@ -65,16 +65,16 @@ public class MongoAsciiExport {
 
     private void parseMbg(Date date, Document doc) {
         Number mbg = (Number) doc.get("mbg");
-        writer.writeLine(date, null, mbg, null, null, null, null);
+        writer.writeLine(date, null, Integer.valueOf(mbg.intValue()), null, null, null);
     }
-
+/*
     private void parseCalibration(Date date, Document doc) {
         Number slope = (Number) doc.get("slope");
         Number intercept = (Number) doc.get("intercept");
 
-        writer.writeLine(date, null, bg, null, null, null, null);
+        writer.writeLine(date, null, bg, null, null, null);
 //ate date, Integer cgms, Integer bg, Integer kh, Integer bolus, String remark
-    }
+    }*/
 
     private void parseSensor(Date date, Document doc) {
         writer.writeLine(date, "Sensor");
@@ -86,7 +86,7 @@ public class MongoAsciiExport {
 
     private void parseSGV(Date date, Document doc) {
         Number sgv = (Number) doc.get("sgv");
-        writer.writeLine(date, sgv.intValue());
+        writer.writeCgms(date, sgv.intValue());
 
     }
 

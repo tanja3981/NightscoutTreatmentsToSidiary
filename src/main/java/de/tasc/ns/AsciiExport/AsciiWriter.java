@@ -86,10 +86,10 @@ public class AsciiWriter {
         fw.flush();
     }
 
-    /*public void writeLine(Date date, String text) {
+    public void writeLine(Date date, String text) {
 
         builder.append(df.format(date) + " " + text);
         newLine();
-    }*/
+    }
 
 }
