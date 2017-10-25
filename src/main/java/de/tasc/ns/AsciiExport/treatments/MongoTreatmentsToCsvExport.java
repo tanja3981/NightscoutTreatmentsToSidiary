@@ -2,9 +2,9 @@ package de.tasc.ns.AsciiExport.treatments;
 
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCursor;
-import de.tasc.ns.AsciiExport.AsciiWriter;
 import de.tasc.ns.AsciiExport.MongoReader;
 import org.bson.Document;
+import org.bson.conversions.Bson;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -21,7 +21,7 @@ import static com.sun.xml.internal.ws.policy.privateutil.PolicyUtils.Text.NEW_LI
 public class MongoTreatmentsToCsvExport {
     private final DateFormat ds = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
 
-    MongoReader reader = new MongoReader();
+
     public final String COMMA = ";";
     SimpleDateFormat dayDF = new SimpleDateFormat("dd.MM.yyyy");
     SimpleDateFormat timeDF = new SimpleDateFormat("HH:mm");
@@ -31,9 +31,10 @@ public class MongoTreatmentsToCsvExport {
         this.writer = writer;
     }
 
-    public void exportTreatments(Date fromDate, Date toDate) throws IOException, ParseException {
+    public void exportTreatments(Bson dateExpr) throws IOException, ParseException {
 
-        FindIterable<Document> results = reader.getTreatments(fromDate, toDate);
+        MongoReader reader = new MongoReader(dateExpr);
+        FindIterable<Document> results = reader.getTreatments();
         MongoCursor<Document> iterator = results.iterator();
         StringBuilder builder;
         writer.write("DAY;TIME;BG_LEVEL;CH_GR;BOLUS;REMARK");

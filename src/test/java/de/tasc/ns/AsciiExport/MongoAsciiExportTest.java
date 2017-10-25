@@ -12,26 +12,15 @@ import java.io.IOException;
  */
 public class MongoAsciiExportTest {
 
-
-
     @Test
     public void exportBgEntries() throws Exception {
 
-        LocalDateTime fromDate = new LocalDateTime(2016, 8, 1, 0, 0, 0);
-        LocalDateTime toDate = new LocalDateTime();
+        AsciiWriter writer = new AsciiWriter();
 
-        FileWriter fos = new FileWriter("/home/tanja/vm-share/bgentries.csv");
-        BufferedWriter writer = new BufferedWriter(fos);
-        try {
-            MongoAsciiExport export = new MongoAsciiExport(writer);
-            export.exportBgEntries(fromDate.toDate(), toDate.toDate());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        MongoAsciiExport export = new MongoAsciiExport(writer);
+        export.exportBgEntries(TestUtil.getDateExpression());
 
-        writer.flush();
-        writer.close();
-        fos.close();
+        writer.saveFile("/home/tanja/vm-share/bgentries.csv");
 
     }
 

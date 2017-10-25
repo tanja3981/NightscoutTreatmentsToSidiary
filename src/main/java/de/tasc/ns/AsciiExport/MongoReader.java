@@ -5,7 +5,9 @@ import com.mongodb.MongoClientURI;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
 import org.bson.Document;
+import org.bson.conversions.Bson;
 
 import java.util.Date;
 
@@ -19,38 +21,41 @@ public class MongoReader {
     public static final String mongoURI = "mongodb://dbuser:MyDB123@ds013569.mlab.com:13569/tanja3981db";
 
     private final MongoDatabase database;
+    private final Bson dateExpr;
 
-    public MongoReader() {
+    public MongoReader(Bson dateExpr) {
         MongoClientURI connectionString = new MongoClientURI(mongoURI);
         MongoClient mongoClient = new MongoClient(connectionString);
 
         database = mongoClient.getDatabase("tanja3981db");
 
+        this.dateExpr = dateExpr;
 
     }
 
-    public FindIterable<Document> getTreatments(Date from, Date to) {
+    public FindIterable<Document> getTreatments() {
         MongoCollection<Document> treatments = database.getCollection("treatments");
 
-        FindIterable<Document> results = treatments.find(
-                //and(
-                //gt("created_at", from.getTime()),
-                //lt("created_at", to.getTime())
-                //,                eq("type", "sgv")
-        //)
-        );
+        FindIterable<Document> results;
+        if (dateExpr != null) {
+            results = treatments.find(
+                    dateExpr
+            );
+        } else {
+            results = treatments.find();
+        }
 
         return results;
     }
 
-    public FindIterable<Document> getEntries(Date from, Date to) {
+    public FindIterable<Document> getEntries() {
         MongoCollection<Document> entries = database.getCollection("entries");
-        FindIterable<Document> results = entries.find(and(
-                gt("date", from.getTime()),
-                lt("date", to.getTime())
-                //,                eq("type", "sgv")
-        ));
-
+        FindIterable<Document> results;
+        if (dateExpr != null) {
+            results = entries.find(dateExpr);
+        } else {
+            results = entries.find();
+        }
         return results;
     }
 
