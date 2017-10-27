@@ -1,12 +1,17 @@
 package de.tasc.ns.AsciiExport;
 
+import com.mongodb.Block;
 import com.mongodb.client.FindIterable;
+import de.tasc.ns.AsciiExport.treatments.MongoTreatmentsToCsvExport;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import java.text.BreakIterator;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -39,17 +44,40 @@ public class MongoReaderTest {
     public void getTreatments() {
 
 
-        MongoReader reader = new MongoReader(TestUtil.getDateExpression());
+        MongoReader reader = new MongoReader(null);
         FindIterable<Document> docs = reader.getTreatments();
+        assertNotNull(docs);
+        Calendar now = Calendar.getInstance();
+        Block<Document> printer = new Block<Document>() {
+            @Override
+            public void apply(Document document) {
+                String dateString = document.getString("created_at");
+                System.out.println(dateString);
+            }
+        };
+        //printer = System.out::println;
+        docs.forEach(printer);
+
         Document doc = docs.first();
         assertNotNull(doc);
         String cd = doc.getString("created_at");
-        try {
-            long d = Date.parse(cd);
-            System.out.println(d);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        System.out.println(cd);
+
+    }
+
+    public static Bson getDateExpression() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.DAY_OF_MONTH, 1);
+        calendar.set(Calendar.MONTH, Calendar.JANUARY);
+        Date fromDate = calendar.getTime();
+        calendar.set(Calendar.DAY_OF_MONTH, 31);
+        calendar.set(Calendar.MONTH, Calendar.DECEMBER);
+        Date toDate = calendar.getTime();
+
+        return and(
+                gt("created_at", fromDate),
+                lt("created_at", toDate)
+        );
     }
 
 }
