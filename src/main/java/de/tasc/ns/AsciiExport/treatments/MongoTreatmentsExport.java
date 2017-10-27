@@ -2,12 +2,14 @@ package de.tasc.ns.AsciiExport.treatments;
 
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCursor;
+import de.tasc.ns.AsciiExport.AsciiWriter;
 import de.tasc.ns.AsciiExport.MongoReader;
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.io.Writer;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -16,67 +18,53 @@ import java.util.Date;
 /**
  * Created by tanja on 25.04.16.
  */
-public class MongoTreatmentsToCsvExport {
-    public static final DateFormat ds = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
-    public static final DateFormat dsFallback1 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
-    public static final DateFormat dsFallback2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
+public class MongoTreatmentsExport {
+    private static final Logger logger = LoggerFactory.getLogger(MongoTreatmentsExport.class);
 
-    public final String NEW_LINE = System.getProperty("line.separator");
-    public final String COMMA = ";";
+    private static final SimpleDateFormat timeDF = new SimpleDateFormat("HH:mm");
 
-    SimpleDateFormat dayDF = new SimpleDateFormat("dd.MM.yyyy");
-    SimpleDateFormat timeDF = new SimpleDateFormat("HH:mm");
-    Writer writer;
+    private static final DateFormat ds = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+    private static final DateFormat dsFallback1 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+    private static final DateFormat dsFallback2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
 
-    public MongoTreatmentsToCsvExport(Writer writer) {
+
+    private AsciiWriter writer;
+
+    public MongoTreatmentsExport(AsciiWriter writer) {
         this.writer = writer;
     }
 
-    public void exportTreatments(Bson dateExpr) throws IOException, ParseException {
+    public void exportTreatments(MongoReader reader) throws IOException {
 
-        MongoReader reader = new MongoReader(dateExpr);
         FindIterable<Document> results = reader.getTreatments();
         MongoCursor<Document> iterator = results.iterator();
         StringBuilder builder;
-        writer.write("DAY;TIME;BG_LEVEL;CH_GR;BOLUS;REMARK");
-        writer.write(NEW_LINE);
+
         while (iterator.hasNext()) {
             builder = new StringBuilder();
 
             Document doc = iterator.next();
             String dateString = doc.getString("created_at");
-            Date date = parseDate(dateString);
+            Date date = null;
+            try {
+                date = parseDate(dateString);
+            } catch (ParseException e) {
+                logger.warn("Unparseable date: " + doc.toJson());
+            }
 
-            String enteredBy = doc.getString("enteredBy");
-            String created_at = doc.getString("created_at");
+//            String enteredBy = doc.getString("enteredBy");
             String eventType = doc.getString("eventType");
             Number carbs = (Number) doc.get("carbs");
             Number insulin = (Number) doc.get("insulin");
             Number glucose = (Number) doc.get("glucose");
-            String glucoseType = doc.getString("glucoseType");
-            String units = doc.getString("units");
+            //String glucoseType = doc.getString("glucoseType");
+            //String units = doc.getString("units");
             Integer duration = doc.getInteger("duration");
             Integer percent = doc.getInteger("percent");
-            Integer preBolus = doc.getInteger("preBolus");
+            //Integer preBolus = doc.getInteger("preBolus");
             String notes = doc.getString("notes");
 
-            builder.append(dayDF.format(date));
-            builder.append(COMMA);
-            builder.append(timeDF.format(date));
-            builder.append(COMMA);
-            if (glucose != null) {
-                builder.append(glucose);
-            }
 
-            builder.append(COMMA);
-            if (carbs != null) {
-                builder.append(carbs);
-            }
-            builder.append(COMMA);
-            if (insulin != null) {
-                builder.append(insulin);
-            }
-            builder.append(COMMA);
 
             if (eventType.equals("Temp Basal") && duration != null && percent != null) {
                 int hours = duration / 60;
@@ -95,8 +83,7 @@ public class MongoTreatmentsToCsvExport {
                 builder.append(notes);
             }
 
-            writer.write(builder.toString());
-            writer.write(NEW_LINE);
+            writer.writeLine(date,null, glucose, carbs, insulin, builder.toString());
         }
     }
 
