@@ -2,6 +2,7 @@ package de.tasc.ns.AsciiExport;
 
 import com.mongodb.Block;
 import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoIterable;
 import de.tasc.ns.AsciiExport.exceptions.UnhandledExportException;
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -10,8 +11,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Properties;
 
 import static com.mongodb.client.model.Filters.*;
 import static org.junit.Assert.assertNotNull;
@@ -21,34 +27,37 @@ import static org.junit.Assert.assertNotNull;
  */
 @RunWith(JUnit4.class)
 public class MongoReaderTest {
-    private static final String mongoURI = "mongodb://dbuser:MyDB123@ds013569.mlab.com:13569/tanja3981db";
-    private static final String databaseName = "tanja3981db";
+
     private ExportSettings settings;
 
     @Before
-    public void setup() {
-        settings = new ExportSettings();
-        settings.setDatabaseName(databaseName);
-        settings.setMongoURI(mongoURI);
-    }
-
-    @Test
-    public void testCountEntries() throws UnhandledExportException {
-
-        MongoReader reader = new MongoReader(settings);
-        reader.countEntries();
+    public void setup() throws Exception {
+        String stream = MongoReaderTest.class.getClassLoader().getResource("settings.properties").getPath();
+        Properties properties = new Properties();
+        properties.load(new FileReader(stream));
+        settings = new ExportSettings(properties);
     }
 
     @Test
     public void testGetEntries() throws UnhandledExportException {
 
         MongoReader reader = new MongoReader(settings);
-        reader.getEntries();
+        FindIterable<Document> entries = reader.getEntries();
+        assertNotNull(entries);
+    }
+
+    @Test
+    public void getCollections() throws UnhandledExportException {
+        MongoReader reader = new MongoReader(settings);
+        MongoIterable<String> collections = reader.getCollections();
+
+        for(String c : collections) {
+            System.out.println(c);
+        }
     }
 
     @Test
     public void getTreatments() throws UnhandledExportException {
-
 
         MongoReader reader = new MongoReader(settings);
         FindIterable<Document> docs = reader.getTreatments();

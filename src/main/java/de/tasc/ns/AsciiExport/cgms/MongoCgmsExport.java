@@ -31,8 +31,10 @@ public class MongoCgmsExport {
     public void exportBgEntries(MongoReader reader) throws UnhandledExportException {
 
         FindIterable<Document> results = reader.getEntries();
+        MongoCursor<Document> iterator = results.iterator();
 
-        for (Document doc : results) {
+        while (iterator.hasNext()) {
+            Document doc = iterator.next();
             //Long dateValue = doc.getLong("date");
             String dateString = doc.getString("dateString");
             if (dateString == null) {
