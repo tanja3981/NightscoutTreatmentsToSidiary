@@ -4,7 +4,7 @@
 
     <groupId>de.tasc.ns</groupId>
     <artifactId>NightscoutToSidiaryExport</artifactId>
-    <version>1.1-SNAPSHOT</version>
+    <version>1.2-SNAPSHOT</version>
 
     <scm>
         <developerConnection>scm:git:https://github.com/tanja3981/NightscoutTreatmentsToSidiary</developerConnection>
