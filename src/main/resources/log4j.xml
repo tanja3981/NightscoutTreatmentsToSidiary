@@ -18,6 +18,7 @@
 
     <root>
         <priority value="debug"/>
+        <appender-ref ref="console"/>
         <appender-ref ref="LogFile"/>
     </root>
 

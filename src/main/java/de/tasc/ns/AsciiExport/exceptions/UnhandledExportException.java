@@ -7,4 +7,7 @@ public class UnhandledExportException extends Exception {
     }
 
 
+    public UnhandledExportException(String s) {
+        super(s);
+    }
 }

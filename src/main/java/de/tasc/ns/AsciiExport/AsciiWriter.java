@@ -1,5 +1,9 @@
 package de.tasc.ns.AsciiExport;
 
+import de.tasc.ns.AsciiExport.exceptions.UnhandledExportException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -8,6 +12,7 @@ import java.util.Date;
  * Created by tanja on 25.04.16.
  */
 public class AsciiWriter {
+    private static final Logger logger = LoggerFactory.getLogger(AsciiWriter.class);
 
     public static final String NEWLINE = "\r\n";
 
@@ -19,21 +24,13 @@ public class AsciiWriter {
     private final BufferedWriter fw;
 
 
-    public AsciiWriter(String filename) throws IOException {
-        this(new File(filename));
-    }
-
-    public AsciiWriter(File file) throws IOException {
-        fos = new FileWriter(file);
+    public AsciiWriter(String filename) throws IOException, UnhandledExportException {
+        verify(filename);
+        fos = new FileWriter(filename);
         fw = new BufferedWriter(fos);
         writeHeader();
     }
 
-    public void saveFile() throws IOException {
-
-        fw.write(builder.toString());
-        fw.close();
-    }
 
     private void writeHeader() {
         String header = "DAY;TIME;UDT_CGMS;BG_LEVEL;CH_GR;BOLUS;REMARK";
@@ -46,7 +43,7 @@ public class AsciiWriter {
         newLine();
     }
 
-    public void writeLine(Date date, Integer cgms, Integer bg, Integer kh, Integer bolus, String remark) {
+    public void writeLine(Date date, Number cgms, Number bg, Number kh, Number bolus, String remark) {
 
         builder.append(df.format(date));
         if (cgms != null) {
@@ -86,10 +83,16 @@ public class AsciiWriter {
         fw.flush();
     }
 
-    public void writeLine(Date date, String text) {
-
-        builder.append(df.format(date) + " " + text);
-        newLine();
+    public void close() throws IOException {
+        flush();
+        fw.close();
     }
 
+    public void verify(String path) throws UnhandledExportException {
+        File exportFile = new File(path);
+        if (!exportFile.canWrite()) {
+            logger.error("Can't write export file " + path);
+            throw new UnhandledExportException(path + " is not writable.");
+        }
+    }
 }
