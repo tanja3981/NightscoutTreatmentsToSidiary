@@ -89,8 +89,10 @@ public class AsciiWriter {
     }
 
     public void verify(String path) throws UnhandledExportException {
+
         File exportFile = new File(path);
-        if (!exportFile.canWrite()) {
+        exportFile.getParentFile().mkdirs();
+        if (exportFile.exists() && !exportFile.canWrite()) {
             logger.error("Can't write export file " + path);
             throw new UnhandledExportException(path + " is not writable.");
         }

@@ -127,14 +127,6 @@ public class ExportSettings {
         return true;
     }
 
-
-    public static ExportSettings getDefaultSettings() {
-        ExportSettings settings = new ExportSettings();
-
-
-        return settings;
-    }
-
     public String getMongoURI() {
         return mongoURI;
     }
