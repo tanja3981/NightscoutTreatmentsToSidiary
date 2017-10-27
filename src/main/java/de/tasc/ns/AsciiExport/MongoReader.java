@@ -5,6 +5,7 @@ import com.mongodb.MongoClientURI;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.MongoIterable;
 import de.tasc.ns.AsciiExport.exceptions.UnhandledExportException;
 import org.bson.Document;
 import org.slf4j.Logger;
@@ -34,6 +35,11 @@ public class MongoReader {
         LOGGER.info("Using database " + databaseName);
         database = mongoClient.getDatabase(databaseName);
 
+
+    }
+
+    public MongoIterable<String> getCollections() {
+        return database.listCollectionNames();
     }
 
     public FindIterable<Document> getTreatments() {
@@ -64,9 +70,4 @@ public class MongoReader {
         return results;
     }
 
-    public void countEntries() {
-
-        MongoCollection<Document> collection = database.getCollection("entries");
-        System.out.println(collection.count());
-    }
 }

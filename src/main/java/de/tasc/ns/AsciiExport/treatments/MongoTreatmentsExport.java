@@ -4,6 +4,7 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCursor;
 import de.tasc.ns.AsciiExport.AsciiWriter;
 import de.tasc.ns.AsciiExport.MongoReader;
+import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.slf4j.Logger;
@@ -65,7 +66,6 @@ public class MongoTreatmentsExport {
             String notes = doc.getString("notes");
 
 
-
             if (eventType.equals("Temp Basal") && duration != null && percent != null) {
                 int hours = duration / 60;
                 int minutes = duration % 60;
@@ -82,8 +82,11 @@ public class MongoTreatmentsExport {
             } else if (notes != null) {
                 builder.append(notes);
             }
-
-            writer.writeLine(date,null, glucose, carbs, insulin, builder.toString());
+            String comment = builder.toString();
+            if (StringUtils.isEmpty(comment)) {
+                comment = null;
+            }
+            writer.writeLine(date, null, glucose, carbs, insulin, comment);
         }
     }
 
