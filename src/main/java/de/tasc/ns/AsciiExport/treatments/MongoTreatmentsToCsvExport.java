@@ -18,6 +18,8 @@ import java.util.Date;
  */
 public class MongoTreatmentsToCsvExport {
     public static final DateFormat ds = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+    public static final DateFormat dsFallback1 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+    public static final DateFormat dsFallback2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
 
     public final String NEW_LINE = System.getProperty("line.separator");
     public final String COMMA = ";";
@@ -43,12 +45,12 @@ public class MongoTreatmentsToCsvExport {
 
             Document doc = iterator.next();
             String dateString = doc.getString("created_at");
-            Date date = ds.parse(dateString);
+            Date date = parseDate(dateString);
 
             String enteredBy = doc.getString("enteredBy");
             String created_at = doc.getString("created_at");
             String eventType = doc.getString("eventType");
-            Integer carbs = doc.getInteger("carbs");
+            Number carbs = (Number) doc.get("carbs");
             Number insulin = (Number) doc.get("insulin");
             Number glucose = (Number) doc.get("glucose");
             String glucoseType = doc.getString("glucoseType");
@@ -96,6 +98,20 @@ public class MongoTreatmentsToCsvExport {
             writer.write(builder.toString());
             writer.write(NEW_LINE);
         }
+    }
+
+    private Date parseDate(String dateString) throws ParseException {
+        try {
+            return ds.parse(dateString);
+        } catch (ParseException e1) {
+//try 2nd version of date
+            try {
+                return dsFallback1.parse(dateString);
+            } catch (ParseException e2) {
+                return dsFallback2.parse(dateString);
+            }
+        }
+
     }
 
 

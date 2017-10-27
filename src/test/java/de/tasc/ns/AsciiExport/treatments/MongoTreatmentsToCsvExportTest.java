@@ -21,7 +21,7 @@ public class MongoTreatmentsToCsvExportTest {
         BufferedWriter writer = new BufferedWriter(fos);
 
         MongoTreatmentsToCsvExport export = new MongoTreatmentsToCsvExport(writer);
-        export.exportTreatments(TestUtil.getDateExpression());
+        export.exportTreatments(null);
 
         writer.flush();
         writer.close();
