@@ -7,8 +7,18 @@
     <groupId>de.tasc.ns</groupId>
     <artifactId>NightscoutToSidiaryExport</artifactId>
     <version>1.0-SNAPSHOT</version>
+
+    <scm>
+        <developerConnection>scm:git:https://github.com/tanja3981/NightscoutTreatmentsToSidiary</developerConnection>
+    </scm>
+
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.5.1</version>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
